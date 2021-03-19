@@ -1,4 +1,4 @@
-part of liboqs_flutter;
+part of liboqs_kem;
 
 class KemOutput {
   final String cipher;

@@ -1,4 +1,12 @@
-part of liboqs_flutter;
+library liboqs_kem;
+
+import 'package:liboqs_flutter/liboqs_flutter.dart';
+import 'dart:ffi' as ffi;
+import 'package:ffi/ffi.dart';
+
+part 'kem_output_obj.dart';
+part 'oqs_kem.dart';
+part 'liboqs_kem_native_typedef.dart';
 
 /// A wrapper for the Key Encapsulation tools in the liboqs C package.
 ///
@@ -20,8 +28,8 @@ part of liboqs_flutter;
 ///  likely the more common source of a cyberattack.
 ///
 ///
-class LiboqsKem extends LiboqsFlutter {
-  static final _liboqs = LiboqsFlutter._liboqs;
+class LiboqsKem {
+  static final _liboqs = LiboqsFlutter.liboqs;
 
   /// The key that Alice and Bob exchange and Eve can see.
   static ffi.Pointer<ffi.Uint8> public;
@@ -32,13 +40,6 @@ class LiboqsKem extends LiboqsFlutter {
   /// The method of Key Encapsulation
   static ffi.Pointer<OqsKem> kem;
   static OqsKem kemObj = kem.ref;
-
-  static ffi.Pointer<ffi.Uint8> _toBytesPointer(List<int> bytes) {
-    final ffi.Pointer<ffi.Uint8> result = malloc<ffi.Uint8>(bytes.length);
-    final List<int> nativeBytes = result.asTypedList(bytes.length).cast<int>();
-    nativeBytes.setRange(0, bytes.length, bytes);
-    return result;
-  }
 
   static final KemEncaps _encaps = _liboqs
       .lookup<ffi.NativeFunction<kem_encaps_func>>("OQS_KEM_encaps")
@@ -105,7 +106,7 @@ class LiboqsKem extends LiboqsFlutter {
 
   /// Initializes OQS, for
   static void liboqsInit() {
-    LiboqsFlutter._liboqsInit();
+    LiboqsFlutter.liboqsInit();
   }
 
   /// Creates a key encapsulation pair
@@ -120,11 +121,11 @@ class LiboqsKem extends LiboqsFlutter {
     int resp = _kemKeypair(kem, public, _secret);
     //public[kem.ref.length_public_key] = 0;
     //secret[kem.ref.length_secret_key] = 0;
-    if (resp == 0) return String.fromCharCodes(public.asTypedList(kem.ref.length_public_key));
+    return (resp == 0) ? String.fromCharCodes(public.asTypedList(kem.ref.length_public_key)): "";
   }
 
   static KemOutput encaps(String publicKey) {
-    final ffi.Pointer<ffi.Uint8> public = _toBytesPointer(publicKey.codeUnits);
+    final ffi.Pointer<ffi.Uint8> public = LiboqsFlutter.toBytesPointer(publicKey.codeUnits);
     final ffi.Pointer<ffi.Uint8> sharedSecretBytes =
         malloc<ffi.Uint8>(kem.ref.length_shared_secret + 1);
     final ffi.Pointer<ffi.Uint8> cipherTextBytes =
@@ -145,7 +146,7 @@ class LiboqsKem extends LiboqsFlutter {
     final ffi.Pointer<ffi.Uint8> sharedSecretDecapsBytes =
         malloc<ffi.Uint8>(kem.ref.length_shared_secret + 1);
     final ffi.Pointer<ffi.Uint8> cipherTextDecapsBytes =
-        _toBytesPointer(cipher.codeUnits);
+        LiboqsFlutter.toBytesPointer(cipher.codeUnits);
     final int resp =
         _decaps(kem, sharedSecretDecapsBytes, cipherTextDecapsBytes, _secret);
     String ret = String.fromCharCodes(

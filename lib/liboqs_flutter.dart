@@ -1,18 +1,13 @@
 library liboqs_flutter;
-import 'dart:convert';
-import 'dart:ffi' as ffi;
-import 'dart:typed_data';
-import 'package:ffi/ffi.dart';
-import 'package:flutter/cupertino.dart';
-import 'dart:io';
-import 'package:utf/utf.dart';
-import 'package:convert/convert.dart';
+export 'kem/liboqs_kem.dart';
+export 'sig/liboqs_sig.dart';
 
-part 'liboqs_kem.dart';
-part 'oqs_kem.dart';
+import 'dart:ffi' as ffi;
+import 'dart:io';
+
+import 'package:ffi/ffi.dart';
+
 part 'liboqs_native_typedef.dart';
-part 'oqs_sig.dart';
-part 'kem_output_obj.dart';
 
 class LiboqsFlutter {
 
@@ -27,10 +22,17 @@ class LiboqsFlutter {
   }
 
   /// Call the liboqs C library
-  static final ffi.DynamicLibrary _liboqs = _open();
+  static final ffi.DynamicLibrary liboqs = _open();
 
   /// Lookup to initialize the available algorithms in oqs.
-  static final void Function() _liboqsInit = _liboqs
+  static final void Function() liboqsInit = liboqs
       .lookup<ffi.NativeFunction<oqs_init>>("OQS_init")
       .asFunction<OqsInit>();
+
+  static ffi.Pointer<ffi.Uint8> toBytesPointer(List<int> bytes) {
+    final ffi.Pointer<ffi.Uint8> result = malloc<ffi.Uint8>(bytes.length);
+    final List<int> nativeBytes = result.asTypedList(bytes.length).cast<int>();
+    nativeBytes.setRange(0, bytes.length, bytes);
+    return result;
+  }
 }
