@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - liboqs_flutter (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - liboqs_flutter (from `.symlinks/plugins/liboqs_flutter/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  liboqs_flutter:
+    :path: ".symlinks/plugins/liboqs_flutter/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+  liboqs_flutter: d92b91531fc432fe054c2756c41eccaed7039f86
+
+PODFILE CHECKSUM: eb77cd5a845e928c3a70e9656aa1e50b7131e89b
+
+COCOAPODS: 1.10.1

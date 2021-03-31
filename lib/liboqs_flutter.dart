@@ -17,7 +17,7 @@ class LiboqsFlutter {
     } else {
       return Platform.isAndroid
           ? ffi.DynamicLibrary.open("liboqs.so")
-          : ffi.DynamicLibrary.process();
+          : ffi.DynamicLibrary.open("liboqs.dylib");
     }
   }
 
